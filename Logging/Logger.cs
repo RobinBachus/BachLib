@@ -24,12 +24,14 @@ namespace BachLib.Logging
 		/// </remarks>
 		public static bool ShowLevel { get; set; } = true;
 
-		private static readonly Dictionary<LogLevel, ConsoleColor> _colors = new()
+		public static TextWriter Out { get; set; } = Console.Out;
+
+		private static readonly Dictionary<LogLevel, ConsoleColor> COLORS = new()
 		{
-			{ LogLevel.Trace, ConsoleColor.Gray },
-			{ LogLevel.Debug, ConsoleColor.DarkGray },
+			{ LogLevel.Trace, ConsoleColor.DarkGray },
+			{ LogLevel.Debug, ConsoleColor.Magenta },
 			{ LogLevel.Info, ConsoleColor.Blue },
-			{ LogLevel.Warn, ConsoleColor.Yellow },
+			{ LogLevel.Warn, ConsoleColor.DarkYellow },
 			{ LogLevel.Error, ConsoleColor.Red },
 			{ LogLevel.Fatal, ConsoleColor.DarkRed }
 		};
@@ -42,28 +44,28 @@ namespace BachLib.Logging
 			// Print newlines before the prefix
 			if (value.StartsWith('\n'))
 			{
-				foreach (char c in value.TakeWhile(c => c == '\n'))
+				foreach (char _ in value.TakeWhile(c => c == '\n'))
 				{
-					Console.WriteLine();
+					Out.WriteLine();
 					value = value[1..];
 				}
 			}
 
-			LogPrefix();
-			Console.WriteLine(value);
+			LogPrefix(level);
+			Out.WriteLine(value);
 		}
 
-		private static void LogPrefix()
+		private static void LogPrefix(LogLevel level)
 		{
 			if (!ShowPrefix)
 				return;
 
-			Console.ForegroundColor = _colors[Level];
+			Console.ForegroundColor = COLORS[level];
 
 			if (ShowDateTime)
-				Console.Write($"[{DateTime.Now:HH:mm:ss}] ");
+				Out.Write($"[{DateTime.Now:HH:mm:ss}] ");
 			if (ShowLevel)
-				Console.Write($"[{Level}] ");
+				Out.Write($"[{level}] ");
 
 			Console.ResetColor();
 		}
