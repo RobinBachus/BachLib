@@ -1,4 +1,6 @@
-﻿using BachLib.Logging.Enums;
+﻿using System.Drawing;
+using BachLib.Logging.Enums;
+using static BachLib.Utils.Conversion;
 
 namespace BachLib.Logging
 {
@@ -31,7 +33,7 @@ namespace BachLib.Logging
 		public static bool ShowLevel { get; set; } = true;
 
 		/// <summary>
-		///    Throw error logs as exceptions.
+		///     Throw error logs as exceptions.
 		/// </summary>
 		public static bool ThrowErrorLogs { get; set; }
 
@@ -87,14 +89,24 @@ namespace BachLib.Logging
 			if (!ShowPrefix)
 				return;
 
-			Console.ForegroundColor = COLORS[level];
 
 			if (ShowDateTime)
-				Out.Write($"[{DateTime.Now:HH:mm:ss}] ");
-			if (ShowLevel)
-				Out.Write($"[{level}] ");
+				Out.Write($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} ");
+
+			if (!ShowLevel) return;
+
+			Console.ForegroundColor = COLORS[level];
+
+			bool isUnix = Environment.OSVersion.Platform == PlatformID.Unix;
+			Out.Write(isUnix ? ColorTextLinux($"[{level}] ", COLORS[level]) : $"[{level}] ");
 
 			Console.ResetColor();
+		}
+
+		private static string ColorTextLinux(string text, ConsoleColor color)
+		{
+			string ansi = ToAnsiEscapeColor(color);
+			return $"{ansi}{text}\u001b[0m";
 		}
 	}
 }
