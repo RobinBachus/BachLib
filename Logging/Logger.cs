@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using BachLib.Logging.Enums;
+﻿using BachLib.Logging.Enums;
 using static BachLib.Utils.Conversion;
 
 namespace BachLib.Logging
